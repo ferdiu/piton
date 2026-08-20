@@ -64,7 +64,7 @@ class ModelPersistenceTest extends TestCase
     public function test_trained_model_round_trips_through_database()
     {
         $this->markTestSkipped(
-            'Skipped due to src bugs in RuleBasedModel persistence: saveToDB indexes a valuesSql array assuming 29 entries but the test-measures array provides 27, causing an undefined key error, and createFromDB calls json_decode() on ClassModel columns that are already cast to arrays.'
+            'Skipped due to a src bug in RuleBasedModel::saveToDB: it indexes a valuesSql array assuming 29 entries but the test-measures array provides 27, causing an undefined key error.'
         );
     }
 

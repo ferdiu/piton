@@ -978,14 +978,14 @@ table.blueTable tfoot .links a{
       //$modelVersion = ModelVersion::where('id', $classModel->id_model_version)->first();
 
       /* From classModel I read information about the class and the associated rules. */
-      $class = json_decode($classModel->class, true);
-      $rulesArray = json_decode($classModel->rules, true);
+      $class = is_string($classModel->class) ? json_decode($classModel->class, true) : $classModel->class;
+      $rulesArray = is_string($classModel->rules) ? json_decode($classModel->rules, true) : $classModel->rules;
 
       /* Re-creation of the attributes. */
       $classAttr = new DiscreteAttribute($class['name'], 'parsed', $class['domain']);
       $attributes = [$classAttr];
       /* From modelVersion I read information about the attributes. */
-      $serializedAttributes = json_decode($classModel->attributes, true);
+      $serializedAttributes = is_string($classModel->attributes) ? json_decode($classModel->attributes, true) : $classModel->attributes;
       if ($serializedAttributes === null) {
         Utils::die_error("Couldn't recreate model from db");
       }

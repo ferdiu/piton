@@ -36,8 +36,10 @@ class ContinuousAttribute extends Attribute {
 
     /** Obtain the representation of a value of the attribute */
     function reprVal($val) : string {
-        if ($val < 0 || $val === NULL)
-            return $val;
+        if ($val === NULL)
+            return '';
+        if ($val < 0)
+            return strval($val);
         switch ($this->getARFFType()) {
             case "date \"yyyy-MM-dd\"":
                 $date = new DateTime();

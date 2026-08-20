@@ -125,7 +125,7 @@ abstract class Rule
 
     function __clone()
     {
-        $this->antecedents = array_map("clone_object", $this->antecedents);
+        $this->antecedents = array_map(fn ($o) => clone $o, $this->antecedents);
     }
 
     /* Print a textual representation of the rule */

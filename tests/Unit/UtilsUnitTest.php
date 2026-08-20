@@ -17,9 +17,10 @@ class UtilsUnitTest extends TestCase
 
     public function test_array_list_displays_keys_for_associative_arrays()
     {
-        $this->markTestSkipped(
-            'Skipped due to a src bug in Utils::array_list: method_exists() is called on scalar values, which throws a TypeError for associative arrays with integer values.'
-        );
+        $output = Utils::array_list(['a' => 1, 'b' => 2]);
+
+        $this->assertStringContainsString('a => 1', $output);
+        $this->assertStringContainsString('b => 2', $output);
     }
 
     public function test_array_equiv_is_order_independent()
@@ -150,9 +151,11 @@ class UtilsUnitTest extends TestCase
 
     public function test_arr_get_value_missing_path_with_default_false_throws()
     {
-        $this->markTestSkipped(
-            'Skipped due to a src bug in Utils::arr_get_value: when $allowNonExistentPaths is false the condition incorrectly short-circuits and tries to access the missing key directly, causing an undefined-key error.'
-        );
+        $utils = app('Utils');
+        $arr = ['a' => ['b' => 42]];
+
+        $this->expectException(InvalidArgumentException::class);
+        $utils->arr_get_value($arr, ['a', 'c']);
     }
 
     public function test_is_assoc_detects_associative_arrays()

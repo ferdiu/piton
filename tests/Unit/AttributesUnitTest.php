@@ -110,9 +110,7 @@ class AttributesUnitTest extends TestCase
 
         $this->assertSame('25.5', $attr->reprVal(25.5));
         $this->assertSame('-1', $attr->reprVal(-1));
-        $this->markTestSkipped(
-            'Skipped due to a src bug in ContinuousAttribute::reprVal: it returns null for null input but declares a string return type.'
-        );
+        $this->assertSame('', $attr->reprVal(null));
     }
 
     public function test_continuous_attribute_repr_val_as_returns_old_value()

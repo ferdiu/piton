@@ -234,8 +234,14 @@ class RulesUnitTest extends TestCase
 
     public function test_ripper_rule_clone_copies_antecedents()
     {
-        $this->markTestSkipped(
-            'Skipped due to a src bug in Rule::__clone: it calls a global "clone_object" function that does not exist.'
-        );
+        $instances = $this->makeBinaryContinuousInstances(1);
+        $ant = $this->buildXAntecedent($instances, 5.0, 0);
+        $rule = new RipperRule(0);
+        $rule->setAntecedents([$ant]);
+
+        $clone = clone $rule;
+
+        $this->assertCount(1, $clone->getAntecedents());
+        $this->assertNotSame($ant, $clone->getAntecedents()[0]);
     }
 }

@@ -171,7 +171,7 @@ class Utils
     {
         $out_str = "";
         foreach ($arr as $i => $val) {
-            if (method_exists($val, "toString")) {
+            if (is_object($val) && method_exists($val, "toString")) {
                 $s = $val->toString();
             } else if (is_array($val)) {
                 $s = Utils::get_arr_dump($val);
@@ -240,11 +240,13 @@ class Utils
     {
         $temp = $arr;
         foreach ($keyPath as $key) {
-            if (!$allowNonExistentPaths || isset($temp[$key])) {
+            if (isset($temp[$key])) {
                 $temp = $temp[$key];
-            } else {
+            } elseif ($allowNonExistentPaths) {
                 $temp = NULL;
                 break;
+            } else {
+                throw new InvalidArgumentException("Key '$key' not found in array path.");
             }
         }
         $out = $temp;

@@ -1,25 +1,14 @@
 ## Findings from the Laravel 13 upgrade (2026-08)
 
-### Bugs surfaced by the new test suite (tests currently skipped with comments)
+### Bugs surfaced by the new test suite (remaining; tests skipped with comments)
 
 - `Instances::removeUselessInsts()` — passes dataset keys to `array_splice()` as
-  zero-based offsets, deleting the wrong rows
+  zero-based offsets, deleting the wrong rows (requires a logic decision: map keys
+  to offsets or iterate differently)
   (see `tests/Unit/InstancesUnitTest.php::test_remove_useless_instances_drops_missing_classes`).
-- `ContinuousAttribute::reprVal()` — declares `string` return type but returns
-  `null` for `null` input
-  (`tests/Unit/AttributesUnitTest.php::test_continuous_attribute_repr_val`).
-- `Utils::array_list()` — calls `method_exists($val, 'toString')` on scalar values,
-  throwing a TypeError on PHP 8
-  (`tests/Unit/UtilsUnitTest.php::test_array_list_displays_keys_for_associative_arrays`).
-- `Rule::__clone()` — calls the global function `clone_object`, which is not
-  registered (`tests/Unit/RulesUnitTest.php::test_ripper_rule_clone_copies_antecedents`).
-- `RuleBasedModel::saveToDB()` / `createFromDB()` — `saveToDB()` indexes a
-  `valuesSql` array assuming 29 entries while test-measures provide 27, and
-  `createFromDB()` calls `json_decode()` on `ClassModel` columns already cast to
-  arrays (`tests/Feature/ModelPersistenceTest.php::test_trained_model_round_trips_through_database`).
-- `Utils::arr_get_value()` — short-circuits incorrectly when
-  `$allowNonExistentPaths` is false
-  (`tests/Unit/UtilsUnitTest.php::test_arr_get_value_missing_path_with_default_false_throws`).
+- `RuleBasedModel::saveToDB()` — indexes a `valuesSql` array assuming 29 entries
+  while test-measures provide 27 (requires a logic decision on the intended mapping)
+  (`tests/Feature/ModelPersistenceTest.php::test_trained_model_round_trips_through_database`).
 
 ### Security backlog (pre-existing, from security review of the upgrade)
 
