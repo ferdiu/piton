@@ -582,7 +582,7 @@ table.blueTable tfoot .links a{
         $totNumRules = count($this->rules);
 
         /** For testing purposes on the rules considering their hierarchy, "a subset of testData". */
-        $subTestData = clone $testData;
+        $subTestData = ($testData !== NULL) ? clone $testData : NULL;
 
         /* Operations on the rules */
         foreach ($this->getRules() as $r => $rule) {

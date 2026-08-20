@@ -13,7 +13,7 @@
 set -euo pipefail
 
 CONTAINER_NAME="piton-test-mysql"
-IMAGE="docker.io/library/mysql:latest"
+IMAGE="docker.io/library/mysql:8.4"
 # Override with e.g. BIND_ADDR=0.0.0.0 when the test runner lives in a
 # different network namespace (sandbox) and reaches the host via a gateway.
 BIND_ADDR="${BIND_ADDR:-127.0.0.1}"
@@ -24,9 +24,8 @@ DB_USER="test"
 DB_PASSWORD="test"
 READY_TIMEOUT_SECONDS=60
 
-# --log-bin-trust-function-creators=1 mirrors conf/management-db.cnf (production):
-# required so the test user can run the raw-SQL trigger migration
-# (2025_05_21_172625_create_monetary_account_trigger) without SUPER privilege.
+# --log-bin-trust-function-creators=1 relaxes the SUPER privilege requirement
+# when creating stored functions/triggers in the ephemeral database.
 #
 # The remaining flags are throwaway-DB performance settings (crash-unsafe, fine
 # for ephemeral tests): binlog off and relaxed fsync semantics. Without them the

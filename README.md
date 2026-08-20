@@ -1,6 +1,13 @@
 # piton
 A set of classification learners for the Laravel framework.
 
+## Compatibility
+
+- **PHP**: `^8.3`
+- **Laravel / Illuminate**: `^13.0`
+
+> The `version` field in `composer.json` drives the automated release workflow: when a push to `main` occurs, a Git tag `v<version>` is created from that value if it does not already exist.
+
 # Install
 
 Add this github project as a repository in composer.json:
@@ -125,6 +132,23 @@ This will create as many models as your class attributes (remember that categori
 We can now try to predict on these results launching: `php artisan piton:predict_by_identifier` and specifying an identifier.
 
 Suggestion: with the iris dataframe, we sugget using SKLearnLearner CART for accurate predictions. To do so, first publish the config file: `php artisan --tag=sklearn_cart.php` (remember, there's a config file for each "algorithm", only "PRip" has just one config file) and then run `php artisan piton:update_models  iris <author_id> SKLearnLearner CART`.
+
+# Testing
+
+The package includes a PHPUnit suite that requires a throwaway MySQL instance. A helper script is provided to start and stop it:
+
+```bash
+# Start the test database (MySQL 8.4 on 127.0.0.1:3310, user/database test/test)
+bin/test-db.sh start
+
+# Run the full test suite
+vendor/bin/phpunit
+
+# Stop the test database
+bin/test-db.sh stop
+```
+
+The container is ephemeral: every `start` creates a fresh database, matching the coordinates used in CI.
 
 # Dependencies
 

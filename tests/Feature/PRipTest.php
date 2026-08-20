@@ -1,9 +1,10 @@
 <?php
 
-namespace aclai\piton\Tests;
+namespace aclai\piton\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use aclai\piton\Tests\TestCase;
 use aclai\piton\Instances\Instances;
 use aclai\piton\Learners\PRip;
 
@@ -27,6 +28,8 @@ class PRipTest extends TestCase
         $model = $learner->initModel();
         $model->fit($trainData, $learner);
         echo "MODEL:" . PHP_EOL . $model . PHP_EOL;
-        $this->assertTrue(true);
+        $this->assertNotNull($model);
+        $this->assertGreaterThan(0, count($model->getRules()));
+        $this->assertStringContainsString("RuleBasedModel", (string) $model);
     }
 }

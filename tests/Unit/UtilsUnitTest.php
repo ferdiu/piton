@@ -4,6 +4,8 @@ namespace aclai\piton\Tests\Unit;
 
 use aclai\piton\Facades\Utils;
 use aclai\piton\Tests\TestCase;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class UtilsUnitTest extends TestCase
 {
@@ -62,6 +64,23 @@ class UtilsUnitTest extends TestCase
     public function test_mysql_backtick_str_wraps_identifier()
     {
         $this->assertSame('`column`', Utils::mysql_backtick_str('column'));
+    }
+
+    public static function invalidNormalizationSumsProvider(): array
+    {
+        return [
+            'zero sum' => [[0, 0]],
+            'nan sum' => [[NAN, 0]],
+        ];
+    }
+
+    #[DataProvider('invalidNormalizationSumsProvider')]
+    public function test_normalize_throws_for_invalid_sum(array $values)
+    {
+        $utils = app('Utils');
+
+        $this->expectException(InvalidArgumentException::class);
+        $utils->normalize($values);
     }
 
     public function test_safe_div_handles_zero_divisor()

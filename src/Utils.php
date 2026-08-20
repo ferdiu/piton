@@ -2,6 +2,8 @@
 
 namespace aclai\piton;
 
+use InvalidArgumentException;
+
 /* Library of generic utils */
 class Utils
 {
@@ -306,11 +308,11 @@ class Utils
         $s = array_sum($arr);
 
         if (is_nan($s)) {
-            throw new IllegalArgumentException("Can't normalize array. Sum is NaN.");
+            throw new InvalidArgumentException("Can't normalize array. Sum is NaN.");
         }
         if ($s == 0) {
             // Maybe this should just be a return.
-            throw new IllegalArgumentException("Can't normalize array. Sum is zero.");
+            throw new InvalidArgumentException("Can't normalize array. Sum is zero.");
         }
         foreach ($arr as &$v) {
             $v /= $s;
