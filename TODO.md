@@ -1,4 +1,49 @@
-- Separate DBFit into 3 classes: fetcher, fitter and predicter.
+## Findings from the Laravel 13 upgrade (2026-08)
+
+### Bugs surfaced by the new test suite (tests currently skipped with comments)
+
+- `Instances::removeUselessInsts()` — passes dataset keys to `array_splice()` as
+  zero-based offsets, deleting the wrong rows
+  (see `tests/Unit/InstancesUnitTest.php::test_remove_useless_instances_drops_missing_classes`).
+- `ContinuousAttribute::reprVal()` — declares `string` return type but returns
+  `null` for `null` input
+  (`tests/Unit/AttributesUnitTest.php::test_continuous_attribute_repr_val`).
+- `Utils::array_list()` — calls `method_exists($val, 'toString')` on scalar values,
+  throwing a TypeError on PHP 8
+  (`tests/Unit/UtilsUnitTest.php::test_array_list_displays_keys_for_associative_arrays`).
+- `Rule::__clone()` — calls the global function `clone_object`, which is not
+  registered (`tests/Unit/RulesUnitTest.php::test_ripper_rule_clone_copies_antecedents`).
+- `RuleBasedModel::saveToDB()` / `createFromDB()` — `saveToDB()` indexes a
+  `valuesSql` array assuming 29 entries while test-measures provide 27, and
+  `createFromDB()` calls `json_decode()` on `ClassModel` columns already cast to
+  arrays (`tests/Feature/ModelPersistenceTest.php::test_trained_model_round_trips_through_database`).
+- `Utils::arr_get_value()` — short-circuits incorrectly when
+  `$allowNonExistentPaths` is false
+  (`tests/Unit/UtilsUnitTest.php::test_arr_get_value_missing_path_with_default_false_throws`).
+
+### Security backlog (pre-existing, from security review of the upgrade)
+
+- `DiscriminativeModel.php:107` and `RuleBasedModel.php:205` — `unserialize()` on
+  database content: write access to those tables means PHP object injection.
+  Consider JSON or `unserialize($data, ['allowed_classes' => [...]])`.
+- `DBFit.php:1393` — `eval()` on a domain-array string; audit how the string is built.
+- Raw SQL built by string interpolation in `Utils.php` mysql_* helpers and `DBFit`
+  (custom quoting instead of prepared statements; see also item 9 above).
+
+### Other findings
+
+- `Console/CreateExample.php` reads `database.connections.mysql.*` while the package
+  connection is `piton_connection` — confusing, may fail for consumers without a
+  `mysql` connection configured.
+- `ModelVersion::problem()` Eloquent relation is missing (needed if feature tests
+  should access `$version->problem` directly).
+- Measure code coverage in CI (pcov is installed there); locally a coverage driver
+  (pcov or xdebug) is required for `composer test-coverage`.
+
+## Original TODO
+
+- Separate DBFit into 3 classes: fetcher, fitter and predicter. (The old extension-less
+  draft files were deleted during the Laravel 13 upgrade; DBFit.php is still monolithic.)
 - Associare ai modelli SOLO gli attributi associati alle regole e non tutti gli attributi su cui è stato effettuato il training. L’obiettivo è che se, ad esempio, per un’istanza l’attributo BMI = NULL, ma non ho regole per BMI associate a quel modello, posso comunque effettuare una predizione. Ancora meglio, si potrebbe trovare un modo per attivare comunque la regola se, ad esempio, BMI è presente a partire dalla N-esima regola ma non è presente fra le prime, e quindi associadno gli attributi addirittura alle regole stesse invece che non ai modelli.
 - Trovare un modo per stampare dei messaggi di errore chiari in caso di config sbagliata. Si è tentato di farlo durante tutto lo sviluppo, ma pul certamente essere migliorato. Mantenere questa cosa anche in caso di nuovi parametri, e valutare se ciò che è presente al momento è sufficiente.
 - Update the storage of rules into the piton_rules table in the database.
