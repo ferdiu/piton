@@ -11,8 +11,7 @@ class PRipTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function a_model_can_be_created_from_an_object_of_type_instances_with_PRip()
+    public function test_a_model_can_be_created_from_an_object_of_type_instances_with_PRip()
     {
         $numOptimizations = 2;
         $numFolds = 5;

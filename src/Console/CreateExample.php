@@ -27,16 +27,17 @@ class CreateExample extends Command
   /**
    * Execute the console command.
    *
-   * @return void
+   * @return int
    */
-  public function handle(DBFit $db_fit)
+  public function handle(DBFit $db_fit): int
   {
     $command = escapeshellcmd("python3 " . __DIR__ . "/../Examples/createIrisDataset.py "
       . " " . config('database.connections.mysql.host')
       . " " . config('database.connections.mysql.username')
       . " " . config('database.connections.mysql.password')
       . " " . config('database.connections.mysql.database'));
-    $output = shell_exec($command);
-    #echo $output; #debug
+    shell_exec($command);
+
+    return self::SUCCESS;
   }
 }

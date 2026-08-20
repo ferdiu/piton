@@ -3,7 +3,7 @@
 # test-db.sh — manage the throwaway MySQL instance used by the test suite.
 #
 # The container is ephemeral ON PURPOSE (no volume): every start is a clean
-# slate. Tests expect MySQL at 127.0.0.1:3306 with database "test" and
+# slate. Tests expect MySQL at 127.0.0.1:3310 with database "test" and
 # credentials test/test — the same coordinates as CI's MySQL service.
 #
 # Container engine: podman is preferred; docker is used as fallback.

@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePitonRulesTable extends Migration
+return new class extends Migration
 {
   /**
-   * Create a migration for the model_version_table.
-   *
-   * @return void
+   * Create a migration for the rules table.
    */
-  public function up()
+  public function up(): void
   {
     /**
      * I first have to check if the table is present in the database, because of a problem with the order of
@@ -51,11 +49,9 @@ class CreatePitonRulesTable extends Migration
 
   /**
    * Reverse the migrations.
-   *
-   * @return void
    */
-  public function down()
+  public function down(): void
   {
     Schema::connection('piton_connection')->dropIfExists('piton_rules');
   }
-}
+};

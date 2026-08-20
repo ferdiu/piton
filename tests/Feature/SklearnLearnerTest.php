@@ -11,8 +11,25 @@ class SklearnLearnerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function a_model_can_be_created_from_an_object_of_type_instances_with_CART()
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (! $this->pythonPackageAvailable('sklearn')) {
+            $this->markTestSkipped('The sklearn Python package is not available.');
+        }
+    }
+
+    /**
+     * Determine whether a Python package can be imported.
+     */
+    private function pythonPackageAvailable(string $package): bool
+    {
+        exec('python3 -c ' . escapeshellarg('import ' . $package) . ' 2>/dev/null', $output, $returnCode);
+        return $returnCode === 0;
+    }
+
+    public function test_a_model_can_be_created_from_an_object_of_type_instances_with_CART()
     {
         $trainData = Instances::createFromARFF(__DIR__ . "/../Arff/iris.arff");
         $learner = new SklearnLearner("CART");

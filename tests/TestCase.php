@@ -6,13 +6,6 @@ use aclai\piton\PitonBaseServiceProvider;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
-    protected function setUp() : void
-    {
-        parent::setUp();
-
-        $this->withFactories(__DIR__.'/../database/factories');
-    }
-
     /**
      * Get package providers.
      *
@@ -33,8 +26,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $app['config']->set('database.connections.piton_connection', [
             'driver' => 'mysql',
             'host' => '127.0.0.1',
-            'port' => '3306',
-            'database' => 'test_database',
+            'port' => '3310',
+            'database' => 'test',
             'username' => 'test',
             'password' => 'test',
             'unix_socket' => '',

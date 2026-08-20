@@ -12,8 +12,25 @@ class WittgensteinLearnerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function a_model_can_be_created_from_an_object_of_type_instances_with_RIPPERk()
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (! $this->pythonPackageAvailable('wittgenstein')) {
+            $this->markTestSkipped('The wittgenstein Python package is not available.');
+        }
+    }
+
+    /**
+     * Determine whether a Python package can be imported.
+     */
+    private function pythonPackageAvailable(string $package): bool
+    {
+        exec('python3 -c ' . escapeshellarg('import ' . $package) . ' 2>/dev/null', $output, $returnCode);
+        return $returnCode === 0;
+    }
+
+    public function test_a_model_can_be_created_from_an_object_of_type_instances_with_RIPPERk()
     {
         $trainData = Instances::createFromARFF(__DIR__."/../Arff/iris.arff");
         $learner = new WittgensteinLearner("RIPPERk", 2);
@@ -23,8 +40,7 @@ class WittgensteinLearnerTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /** @test */
-    public function a_model_can_be_created_from_an_object_of_type_instances_with_IREP()
+    public function test_a_model_can_be_created_from_an_object_of_type_instances_with_IREP()
     {
         $trainData = Instances::createFromARFF(__DIR__."/../Arff/iris.arff");
         $learner = new WittgensteinLearner("IREP", 2);
@@ -34,8 +50,7 @@ class WittgensteinLearnerTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /** @test */
-    public function a_model_can_be_stored_into_the_database()
+    public function test_a_model_can_be_stored_into_the_database()
     {
         $trainData = Instances::createFromARFF(__DIR__."/../Arff/iris.arff");
         $learner = new WittgensteinLearner("IREP", 2);
@@ -45,8 +60,7 @@ class WittgensteinLearnerTest extends TestCase
         $this->assertCount(1, ClassModel::all());
     }
 
-    /** @test */
-    public function evaluation_of_a_model_before_storing_it_into_the_database()
+    public function test_evaluation_of_a_model_before_storing_it_into_the_database()
     {
         $trainData = Instances::createFromARFF(__DIR__."/../Arff/iris.arff");
         $testData = Instances::createFromARFF(__DIR__."/../Arff/irisTest.arff");
@@ -54,7 +68,6 @@ class WittgensteinLearnerTest extends TestCase
         $model = $learner->initModel();
         $model->fit($trainData, $learner);
         $model->saveToDB(1, "myIris", "Wittgenstein IREP", $testData);
-        dd(ClassModel::all());
         $this->assertCount(1, ClassModel::all());
     }
 }

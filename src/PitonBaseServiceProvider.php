@@ -10,6 +10,12 @@ class PitonBaseServiceProvider extends ServiceProvider
 	{
         if ($this->app->runningInConsole()) {
             $this->registerPublishing();
+            $this->commands([
+                Console\CreateExample::class,
+                Console\PredictByIdentifier::class,
+                Console\UpdateModels::class,
+                Console\UpdateModelsWithInterface::class,
+            ]);
         }
 
 		$this->registerResources();
@@ -22,12 +28,7 @@ class PitonBaseServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->commands([
-            Console\CreateExample::class,
-            Console\PredictByIdentifier::class,
-            Console\UpdateModels::class,
-            Console\UpdateModelsWithInterface::class,
-        ]);
+        //
     }
 
     /**

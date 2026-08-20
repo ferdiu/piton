@@ -10,10 +10,9 @@ class SaveModelVersionTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function a_model_version_can_be_created_with_the_factory()
+    public function test_a_model_version_can_be_created_with_the_factory()
     {
-        factory(ModelVersion::class)->create();
+        ModelVersion::factory()->create();
 
         $this->assertCount(1, ModelVersion::all());
     }

@@ -29,22 +29,34 @@ class UpdateModelsWithInterface extends Command
   protected $description = 'Create rule based models using a cli interface.';
 
   /**
+   * Check if the problem config file exists.
+   * 
+   * @param string $problem The name of the problem.
+   * @return bool
+   */
+  protected function configNotPublished(string $problem) : bool
+  {
+    return is_null(config($problem));
+  }
+
+  /**
    * Execute the console command.
    *
-   * @return void
+   * @return int
    */
-  public function handle(DBFit $db_fit)
+  public function handle(DBFit $db_fit): int
   {
     $problem = $this->ask('Please insert the problem name');
 
     /* Check if the problem config file exists. */
     if ($this->configNotPublished($problem)) {
-      return $this->warn(
+      $this->warn(
         'No config file found for problem ' . $problem . '.' . "\n" .
         'Please publish the general problem config file by running ' . "\n" .
         ' \'php artisan vendor:publish --tag=problem-config\'' . "\n" .
         'and rename it with the name of your problem.'
       );
+      return self::FAILURE;
     }
 
     /* Asks information about the author. */
@@ -57,8 +69,9 @@ class UpdateModelsWithInterface extends Command
     if ($learner === 'PRip') {
       /* Checks if the PRip config file has been published. */
       if (PRip::configNotPublished()) {
-        return $this->warn('Please publish the prip config files by running ' . "\n"
+        $this->warn('Please publish the prip config files by running ' . "\n"
           . '\'php artisan vendor:publish --tag=prip-config\'');
+        return self::FAILURE;
       }
 
       /* Creates an instance of the learner of type PRip. */
@@ -77,8 +90,9 @@ class UpdateModelsWithInterface extends Command
       if ($algorithm === 'CART') {
         /* Checks if the SKLearnLearner CART config file has been published. */
         if (SklearnLearner::CARTconfigNotPublished()) {
-          return $this->warn('Please publish the sklearn_cart config files by running ' . "\n"
+          $this->warn('Please publish the sklearn_cart config files by running ' . "\n"
             . '\'php artisan vendor:publish --tag=sklearn_cart-config\'');
+          return self::FAILURE;
         }
 
         /* Create an instance of the Learner, setting CART as the classifier algorithm to be used. */
@@ -102,6 +116,7 @@ class UpdateModelsWithInterface extends Command
       else {
         $this->warn('Sorry, the chosen algorithm is not valid. Please choose among one of our algorithms.' . "\n"
           . 'Available algorithm for the \'SKLearnLearner\' is \'CART\'');
+        return self::FAILURE;
       }
     }
     else if ($learner === 'WittgensteinLearner') {
@@ -112,8 +127,9 @@ class UpdateModelsWithInterface extends Command
       if ($algorithm === "IREP") {
         /* Checks if the WittgensteinLearner IREP config file has been published. */
         if (WittgensteinLearner::IREPconfigNotPublished()) {
-          return $this->warn('Please publish the wittgenstein_irep config files by running ' . "\n"
+          $this->warn('Please publish the wittgenstein_irep config files by running ' . "\n"
             . '\'php artisan vendor:publish --tag=wittgenstein_irep-config\'');
+          return self::FAILURE;
         }
 
         /* Create an instance of the Learner, setting IREP as the classifier algorithm to be used. */
@@ -131,8 +147,9 @@ class UpdateModelsWithInterface extends Command
       else if ($algorithm === 'RIPPERk') {
         /* Checks if the WittgensteinLearner RIPPERk config file has been published. */
         if (WittgensteinLearner::RIPPERkconfigNotPublished()) {
-          return $this->warn('Please publish the wittgenstein_irep config files by running '
+          $this->warn('Please publish the wittgenstein_irep config files by running '
             . '\'php artisan vendor:publish --tag=wittgenstein_ripperk-config\'');
+          return self::FAILURE;
         }
 
         /* Create an instance of the Learner, setting CART as the classifier algorithm to be used. */
@@ -153,11 +170,13 @@ class UpdateModelsWithInterface extends Command
       else {
         $this->warn('Sorry, the chosen algorithm is not valid. Please choose among one of our algorithms.' . "\n"
           . 'Available algorithms for the \'WittgensteinLearner\' are \'IREP\' and \'RIPPERk\'');
+        return self::FAILURE;
       }
     }
     else {
       $this->warn('Sorry, the chosen learner is not valid. Please choose among one of our learners.' . "\n"
         . 'Available learners are \'PRip\', \'WittgensteinLearner\' and \'SKLearnLearner\'');
+      return self::FAILURE;
     }
 
     /**
@@ -212,5 +231,7 @@ class UpdateModelsWithInterface extends Command
       $end = microtime(TRUE);
       echo "updateModel took " . ($end - $start) . " seconds to complete." . PHP_EOL;
     }
+
+    return self::SUCCESS;
   }
 }

@@ -34,9 +34,9 @@ class PredictByIdentifier extends Command
   /**
    * Execute the console command.
    *
-   * @return void
+   * @return int
    */
-  public function handle(DBFit $db_fit)
+  public function handle(DBFit $db_fit): int
   {
     /**
      * The name of the problem to be solved.
@@ -49,9 +49,17 @@ class PredictByIdentifier extends Command
     $db_fit = new DBFit();
     // Utils::die_error(Utils::get_var_dump(ModelVersion::orderByDesc('id')->count()));
     $modelVersion = ModelVersion::orderByDesc('id')->first(); # Get most recent version
+
+    if ($modelVersion === null) {
+      $this->error('No model version found.');
+      return self::FAILURE;
+    }
+
     // dd(ModelVersion::orderByDesc('id'));
     // dd($modelVersion);
     $predictions = $db_fit->predictByIdentifier($idVal,[],$modelVersion->id, false, false);
-    dd($predictions);
+    $this->line($predictions);
+
+    return self::SUCCESS;
   }
 }

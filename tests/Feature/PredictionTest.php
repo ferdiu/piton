@@ -11,11 +11,16 @@ use aclai\piton\PitonBaseServiceProvider;
 
 class PredictionTest extends TestCase
 {
-  /** @test */
-  public function a_prediction_on_an_instance_of_given_id_can_be_done()
+  public function test_a_prediction_on_an_instance_of_given_id_can_be_done()
   {
-    $db_fit = new DBFit();
     $classModel = ClassModel::orderByDesc('id')->first(); # most recent model created
+    if ($classModel === null) {
+        $this->markTestSkipped('No trained ClassModel exists in the database.');
+    }
+    if (config('piton.outputColumns') === null) {
+        $this->markTestSkipped('The piton config is not published.');
+    }
+    $db_fit = new DBFit();
     $model = RuleBasedModel::createFromDB($classModel->id);
     echo "Model created: " . $model;
     $db_fit->setIdentifierColumnName('referti.id');

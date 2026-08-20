@@ -47,9 +47,9 @@ class UpdateModels extends Command
   /**
    * Execute the console command.
    *
-   * @return void
+   * @return int
    */
-  public function handle(DBFit $db_fit)
+  public function handle(DBFit $db_fit): int
   {
     /**
      * The name of the problem to be solved.
@@ -75,21 +75,23 @@ class UpdateModels extends Command
 
     /* Check if the problem config file exists. */
     if ($this->configNotPublished($problem)) {
-      return $this->warn(
+      $this->warn(
         'No config file found for problem ' . $problem . '.' . "\n" .
         'Please publish the general problem config file by running ' . "\n" .
         ' \'php artisan vendor:publish --tag=problem-config\'' . "\n" .
         'and rename it with the name of your problem.'
       );
+      return self::FAILURE;
     }
 
     if ($learner === 'PRip') {
       /* Checks if the PRip config file has been published. */
       if (PRip::configNotPublished()) {
-        return $this->warn(
+        $this->warn(
             'Please publish the prip config files by running ' . "\n" .
             '\'php artisan vendor:publish --tag=prip-config\''
         );
+        return self::FAILURE;
       }
 
       /* Creates an instance of the learner of type PRip. */
@@ -111,10 +113,11 @@ class UpdateModels extends Command
       if ($algorithm === 'CART') {
         /* Checks if the SKLearnLearner CART config file has been published. */
         if (SklearnLearner::CARTconfigNotPublished()) {
-          return $this->warn(
+          $this->warn(
               'Please publish the sklearn_cart config files by running ' . "\n" .
               '\'php artisan vendor:publish --tag=sklearn_cart-config\''
           );
+          return self::FAILURE;
         }
 
         /* Create an instance of the Learner, setting CART as the classifier algorithm to be used. */
@@ -140,6 +143,7 @@ class UpdateModels extends Command
           'Sorry, the chosen algorithm is not valid. Please choose among one of our algorithms.' . "\n" .
           'Available algorithm for the \'SKLearnLearner\' is \'CART\''
         );
+        return self::FAILURE;
       }
     }
     else if ($learner === 'WittgensteinLearner') {
@@ -153,10 +157,11 @@ class UpdateModels extends Command
       if ($algorithm === "IREP") {
         /* Checks if the WittgensteinLearner IREP config file has been published. */
         if (WittgensteinLearner::IREPconfigNotPublished()) {
-          return $this->warn(
+          $this->warn(
             'Please publish the wittgenstein_irep config files by running ' . "\n" .
             '\'php artisan vendor:publish --tag=wittgenstein_irep-config\''
           );
+          return self::FAILURE;
         }
 
         /* Create an instance of the Learner, setting IREP as the classifier algorithm to be used. */
@@ -174,10 +179,11 @@ class UpdateModels extends Command
       else if ($algorithm === 'RIPPERk') {
         /* Checks if the WittgensteinLearner RIPPERk config file has been published. */
         if (WittgensteinLearner::RIPPERkconfigNotPublished()) {
-          return $this->warn(
+          $this->warn(
             'Please publish the wittgenstein_irep config files by running ' .
             '\'php artisan vendor:publish --tag=wittgenstein_ripperk-config\''
           );
+          return self::FAILURE;
         }
 
         /* Create an instance of the Learner, setting CART as the classifier algorithm to be used. */
@@ -200,6 +206,7 @@ class UpdateModels extends Command
           'Sorry, the chosen algorithm is not valid. Please choose among one of our algorithms.' . "\n" .
           'Available algorithms for the \'WittgensteinLearner\' are \'IREP\' and \'RIPPERk\''
         );
+        return self::FAILURE;
       }
     }
     else {
@@ -207,6 +214,7 @@ class UpdateModels extends Command
         'Sorry, the chosen learner is not valid. Please choose among one of our learners.' . "\n" .
         'Available learners are \'PRip\', \'WittgensteinLearner\' and \'SKLearnLearner\''
       );
+      return self::FAILURE;
     }
 
     /**
@@ -261,9 +269,12 @@ class UpdateModels extends Command
       if ($erroroccurred) {
         ModelVersion::destroy($modelVersion->id);
         echo PHP_EOL . "An ERROR occurred. Trained models were not saved" . PHP_EOL;
+        return self::FAILURE;
       }
       $end = microtime(TRUE);
       echo "updateModel took " . ($end - $start) . " seconds to complete." . PHP_EOL;
     }
+
+    return self::SUCCESS;
   }
 }

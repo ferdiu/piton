@@ -1,0 +1,36 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read version from composer.json
+        id: version
+        run: |
+          version=$(jq -r '.version' composer.json)
+          echo "version=${version}" >> $GITHUB_OUTPUT
+          echo "tag=v${version}" >> $GITHUB_OUTPUT
+
+      - name: Create tag and release if absent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git rev-parse "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.version.outputs.tag }} already exists — skipping release."
+            exit 0
+          fi
+          gh release create "${{ steps.version.outputs.tag }}" \
+            --generate-notes \
+            --title "${{ steps.version.outputs.tag }}"
