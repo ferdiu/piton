@@ -7,6 +7,10 @@
         {
             "name": "Alberto Paparella",
             "email": "alberto.paparella@edu.unife.it"
+        },
+        {
+            "name": "Federico Manzella",
+            "email": "federico.manzella@unife.it"
         }
     ],
     "require": {
