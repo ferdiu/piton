@@ -17,7 +17,7 @@ IMAGE="docker.io/library/mysql:latest"
 # Override with e.g. BIND_ADDR=0.0.0.0 when the test runner lives in a
 # different network namespace (sandbox) and reaches the host via a gateway.
 BIND_ADDR="${BIND_ADDR:-127.0.0.1}"
-PORT="3306"
+PORT="3310"
 ROOT_PASSWORD="root"
 DB_NAME="test"
 DB_USER="test"
